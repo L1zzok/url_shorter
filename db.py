@@ -6,9 +6,28 @@ try:
     con = sqlite3.connect(r"db.db", check_same_thread=False)
     # создали курсор для запросов
     cursor = con.cursor()
-    # создали таблицу в базе, если она еще не существует
+    # создали таблицу пользователей в базе, если она еще не существует
     cursor.execute(
         '''CREATE TABLE IF NOT EXISTS "users" ("id" INTEGER NOT NULL,"login" TEXT NOT NULL, "password" TEXT NOT NULL, primary key("id" AUTOINCREMENT));''')
+
+    # создали таблицу доступа в базе, если ее еще не существует
+    cursor.execute(
+        '''CREATE TABLE IF NOT EXISTS "accesses" ("id" INTEGER NOT NULL,"level" TEXT NOT NULL, primary key("id" AUTOINCREMENT));''')
+
+    # создали таблицу ссылок в базе, если она еще не существует
+    cursor.execute(
+        '''CREATE TABLE IF NOT EXISTS "links" (
+        "id" INTEGER NOT NULL, 
+        "long" TEXT NOT NULL, 
+        "short" TEXT NOT NULL, 
+        "count" INTEGER NOT NULL, 
+        "owner" INTEGER NOT NULL, 
+        "access" INTEGER NOT NULL,
+        primary key("id" AUTOINCREMENT),
+        FOREIGN KEY ("owner") REFERENCES users("id"),
+        FOREIGN KEY ("access") REFERENCES accesses("id")
+        );''')
+
     # зафиксировали изменения в базе
     con.commit()
 
