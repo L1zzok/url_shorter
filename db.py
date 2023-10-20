@@ -41,6 +41,9 @@ try:
             return cursor.execute('''SELECT * FROM users WHERE login=?;''', (login,)).fetchone()
 
 
+    def find_pass(cursor, login):
+        return cursor.execute('''SELECT password FROM users WHERE login =?;''', (login,)).fetchone()
+
     # функция регистрации пользователя
     def registration(connection, cursor, login, password):
         cursor.execute(

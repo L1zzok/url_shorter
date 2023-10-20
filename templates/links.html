@@ -1,0 +1,26 @@
+{% extends 'profile.html' %}
+{% block title %}Мои ссылки{% endblock %}
+{% block content %}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">№</th>
+      <th scope="col">Короткая ссылка</th>
+      <th scope="col">Длинная ссылка</th>
+      <th scope="col">Доступ</th>
+        <th scope="col">Дей-вия</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+        <td><button class="btn btn-light">✏️</button> <button class="btn btn-light">❌</button></td>
+    </tr>
+    <tr>
+  </tbody>
+</table>
+{% endblock %}
