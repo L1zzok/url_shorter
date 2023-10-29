@@ -8,7 +8,7 @@ bcrypt = Bcrypt(app)
 Flask.secret_key = os.urandom(10)
 
 
-menu = {'name': 'Авторизация', 'url': '/auth'},{'name':'Регистрация', 'url': '/reg'}, {'name': 'Главная', 'url': '/index'}, {'name': 'Профиль', 'url': '/profile'}
+menu = {'name': 'Авторизация', 'url': '/auth'},{'name':'Регистрация', 'url': '/reg'}, {'name': 'Главная', 'url': '/index'}, {'name': 'Профиль', 'url': '/profile'}, {'name': 'Мои ссылки', 'url': '/links'}
 
 @app.route('/')
 def index():
@@ -18,13 +18,25 @@ def index():
 def auth():
     return render_template('auth.html', menu=menu)
 
-@app.route('/links')
-def links():
-    return render_template('links.html', menu=menu)
+# @app.route('/links')
+# def links():
+#     return render_template('links.html', menu=menu)
 
 @app.route('/reg')
 def reg():
     return render_template('reg.html', menu=menu)
+
+@app.route('/profile')
+def profile():
+    if "auth" in session:
+        return render_template('profile.html', menu=menu)
+    else:
+        return redirect('http://127.0.0.1:5000/login')
+
+@app.route('/logout')
+def logout():
+    session.pop('auth', None)
+    return redirect('http://127.0.0.1:5000/')
 
 @app.route('/reg', methods= ['POST', "GET"])
 def registr():
@@ -64,18 +76,29 @@ def authh():
         else:
             return f"Пользователь не найден"
 
+@app.route('/profile', methods= ['POST', "GET"])
+def addLink():
+    if request.method == 'POST':
+        con = sqlite3.connect(r"db.db")
+        cursor = con.cursor()
+        login = session['name']
+        lvl = request.form['lvl']
+        short = request.form['short']
+        long = request.form['long']
+        if session['auth'] == True:
+            add_link(con, cursor, login, long, short, lvl)
+            return redirect('http://127.0.0.1:5000/links')
+        else:
+            return f"Вы не авторизованы"
 
-@app.route('/profile')
-def profile():
-    if "auth" in session:
-        return render_template('profile.html', menu=menu)
-    else:
-        return redirect('http://127.0.0.1:5000/login')
-
-@app.route('/logout')
-def logout():
-    session.pop('auth', None)
-    return redirect('http://127.0.0.1:5000/')
+@app.route('/links')
+def view_linkss():
+    con = sqlite3.connect(r"db.db")
+    cursor = con.cursor()
+    login = session['name']
+    if session['auth'] == True:
+        arr = view_link(cursor, login)
+        return render_template('links.html', arr = arr)
 
 
 if __name__ == "__main__":

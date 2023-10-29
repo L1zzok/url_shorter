@@ -1,6 +1,6 @@
 # импортируем библиотеку для работы с базой данных
 import sqlite3
-
+accesses_lvl = ["Публичная","Общего доступа","Приватная"]
 try:
     # создали подключение к бд. если такой базы нет, то она создастся сама
     con = sqlite3.connect(r"db.db", check_same_thread=False)
@@ -27,10 +27,17 @@ try:
         FOREIGN KEY ("owner") REFERENCES users("id"),
         FOREIGN KEY ("access") REFERENCES accesses("id")
         );''')
+    def find_count_category(cursor):
+        cat = cursor.execute('''SELECT COUNT(*) FROM accesses;''').fetchone()
+        return cat[0]
+    k = 0
+    if find_count_category(cursor) < 3:
+        while k < 3:
+            cursor.execute('''INSERT INTO accesses(level) VALUES (?);''', (accesses_lvl[k],))
+            k += 1
 
     # зафиксировали изменения в базе
     con.commit()
-
 
     # функция поиска пользователя в базе
     def find_user(cursor, login, password=False):
@@ -40,6 +47,19 @@ try:
         else:
             return cursor.execute('''SELECT * FROM users WHERE login=?;''', (login,)).fetchone()
 
+    def id_user(cursor,login):
+        user = cursor.execute('''SELECT id FROM users WHERE login =?''', (login,)).fetchone()
+        return user[0]
+
+    def id_lvl(cursor,lvl):
+         link = cursor.execute('''SELECT id FROM accesses WHERE level =?''', (lvl,)).fetchone()
+         return link[0]
+
+    def add_link(con, cursor, login, long, short, lvl, count=1):
+        user = id_user(cursor,login)
+        level = id_lvl(cursor,lvl)
+        cursor.execute('''INSERT INTO links(owner, long, short, access, count) VALUES (?,?,?,?,?);''',(user, long, short, level, count))
+        con.commit()
 
     def find_pass(cursor, login):
         return cursor.execute('''SELECT password FROM users WHERE login =?;''', (login,)).fetchone()
@@ -62,44 +82,12 @@ try:
             '''DELETE FROM users WHERE login=? AND password=?;''', (login, password))
         connection.commit()
 
+
+    def view_link(cursor,login):
+       user = id_user(cursor,login)
+       return cursor.execute('''SELECT id, short, long, access, count FROM links WHERE owner = ?''', (user,)).fetchall()
+
+
     cursor.close()
-
-#     while True:
-#         # запросили действие
-#         act = int(input(
-#             "Что вы хотите сделать? регистрация - 1, авторизация - 2, выйти - 3, удалить пользователя - 4\n"))
-#         # выход из цикла
-#         if act == 3:
-#             break
-#         else:
-#             # запросили логин и пароль
-#             login = input("введите логин ")
-#             password = input("введите пароль ")
-#
-#             # регистрация
-#             if act == 1:
-#                 if find_user(cursor, login, password):
-#                     print("Пользователь с такими данными уже зарегистрирован")
-#                 else:
-#                     registration(con, cursor, login, password)
-#                     print("Пользователь успешно зарегистрирован")
-#
-#             # авторизация
-#             if act == 2:
-#                 if authorize(cursor, login, password):
-#                     print("Авторизация успешна")
-#                 else:
-#                     print("Неверный логин или пароль")
-#
-#             # удаление пользователя
-#             if act == 4:
-#                 if find_user(cursor, login, password):
-#                     delete_user(con, cursor, login, password)
-#                     print("Пользователь успешно удалён")
-#                 else:
-#                     print("Пользователь с такими данными не найден")
-#     # закрыли подключение
-
-#
 except ValueError:
     print("Некорректно введены данные(используйте цифры)")

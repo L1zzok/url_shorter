@@ -52,20 +52,20 @@
     <h4>Добавить ссылку</h4>
   <div class="mb-2">
     <label for="exampleInputLong" class="form-label">Вставьте длинную ссылку</label>
-    <input type="text" class="form-control" id="exampleInputLong">
+    <input type="text" class="form-control" id="exampleInputLong" name="long">
   </div>
 
   <div class="mb-2">
     <label for="exampleInputShort" class="form-label">Вставьте короткую ссылку</label>
-    <input type="text" class="form-control" id="exampleInputShort">
+    <input type="text" class="form-control" id="exampleInputShort" name="short">
   </div>
 
   <label>Выберите уровень доступа</label>
-  <select class="form-select mb-2" aria-label="Default select example">
+  <select class="form-select mb-2" aria-label="Default select example" name="lvl">
   <option selected>Уровень доступа</option>
-  <option value="1">Публичные</option>
-  <option value="2">Общего доступа</option>
-  <option value="3">Приватные</option>
+  <option value="Публичная">Публичная</option>
+  <option value="Общего доступа">Общего доступа</option>
+  <option value="Приватная">Приватная</option>
 </select>
 
   <button type="submit" class="btn btn-primary">Добавить</button>
