@@ -45,31 +45,12 @@
 <div class="container my-3">
     {% block content %}
     <div class="row">
-        <h3 class="col-2">{{session['name']}}</h3> <button class="btn btn-warning col-2">Изменить</button>
+        <form method="POST">
+            <input type="text" name="login" value="{{session['name']}}" class="col-2">
+            <input type="hidden" name="id" value="{{session['id']}}">
+            <button type="submit" class="btn btn-warning col-2">Изменить</button>
+        </form>
 
-
-<form method="post" class="mb-3 mt-5">
-    <h4>Добавить ссылку</h4>
-  <div class="mb-2">
-    <label for="exampleInputLong" class="form-label">Вставьте длинную ссылку</label>
-    <input type="text" class="form-control" id="exampleInputLong" name="long">
-  </div>
-
-  <div class="mb-2">
-    <label for="exampleInputShort" class="form-label">Вставьте короткую ссылку</label>
-    <input type="text" class="form-control" id="exampleInputShort" name="short">
-  </div>
-
-  <label>Выберите уровень доступа</label>
-  <select class="form-select mb-2" aria-label="Default select example" name="lvl">
-  <option selected>Уровень доступа</option>
-  <option value="Публичная">Публичная</option>
-  <option value="Общего доступа">Общего доступа</option>
-  <option value="Приватная">Приватная</option>
-</select>
-
-  <button type="submit" class="btn btn-primary">Добавить</button>
-</form>
     </div>
     {% endblock %}
 </div>

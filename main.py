@@ -38,6 +38,15 @@ def logout():
     session.pop('auth', None)
     return redirect('http://127.0.0.1:5000/')
 
+@app.route('/del', methods = ["GET"])
+def del_link():
+    con = sqlite3.connect(r"db.db", check_same_thread=False)
+    cursor = con.cursor()
+    id = request.args.get('id')
+    del_links(con, cursor,id)
+    return redirect('http://127.0.0.1:5000/links')
+
+
 @app.route('/reg', methods= ['POST', "GET"])
 def registr():
     if request.method == 'POST':
@@ -69,6 +78,8 @@ def authh():
             if is_valid == True:
                 authorize(cursor, login, hashedd)
                 session['name'] = login
+                id = id_user(cursor,login)
+                session['id'] = id
                 session['auth'] = True
                 return redirect('http://127.0.0.1:5000/profile')
             else:
@@ -76,7 +87,7 @@ def authh():
         else:
             return f"Пользователь не найден"
 
-@app.route('/profile', methods= ['POST', "GET"])
+@app.route('/links', methods= ['POST'])
 def addLink():
     if request.method == 'POST':
         con = sqlite3.connect(r"db.db")
@@ -99,6 +110,20 @@ def view_linkss():
     if session['auth'] == True:
         arr = view_link(cursor, login)
         return render_template('links.html', arr = arr)
+
+@app.route('/profile', methods= ["POST"])
+def change_user():
+    if request.method == "POST":
+        con = sqlite3.connect(r"db.db")
+        cursor = con.cursor()
+        new_login = request.form['login']
+        session['name'] = new_login
+        id = request.form['id']
+        print(new_login)
+        print(id)
+        change_login(con,cursor, id,new_login)
+
+    return redirect('http://127.0.0.1:5000/profile')
 
 
 if __name__ == "__main__":

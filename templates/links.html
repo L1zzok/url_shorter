@@ -2,6 +2,30 @@
 {% block title %}Мои ссылки{% endblock %}
 {% block content %}
 
+
+<form method="post" class="mb-3 mt-5">
+    <h4>Добавить ссылку</h4>
+  <div class="mb-2">
+    <label for="exampleInputLong" class="form-label col-4">Вставьте длинную ссылку</label>
+    <input type="text" class="form-control col-4" id="exampleInputLong" name="long">
+  </div>
+
+  <div class="mb-2">
+    <label for="exampleInputShort" class="form-label col-4">Вставьте короткую ссылку</label>
+    <input type="text" class="form-control col-4" id="exampleInputShort" name="short">
+  </div>
+
+  <label>Выберите уровень доступа</label>
+  <select class="form-select mb-2 col-4" aria-label="Default select example" name="lvl">
+  <option selected>Уровень доступа</option>
+  <option value="Публичная">Публичная</option>
+  <option value="Общего доступа">Общего доступа</option>
+  <option value="Приватная">Приватная</option>
+</select>
+
+  <button type="submit" class="btn btn-primary">Добавить</button>
+</form>
+
 <table class="table">
   <thead>
     <tr>
@@ -21,7 +45,7 @@
       <td><a href="{{item.long}}">{{item[2]}}</a></td>
       <td>{{item[3]}}</td>
       <td>{{item[4]}}</td>
-        <td><button class="btn btn-light">✏️</button> <button class="btn btn-light">❌</button></td>
+        <td><button name="edit" class="btn btn-light">✏️</button> <a href="/del?id={{item[0]}}" name="del" class="btn btn-light">❌</a></td>
     </tr>
   {% endfor%}
     <tr>

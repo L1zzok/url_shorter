@@ -70,6 +70,11 @@ try:
             '''INSERT INTO users(login,password) VALUES (?,?) ;''', (login, password))
         connection.commit()
 
+    def change_login(connection, cursor, id, new_log):
+        cursor.execute(
+            '''UPDATE users SET login=? WHERE id = ?''', (new_log,id)
+        )
+        connection.commit()
 
     # функция авторизации пользователя
     def authorize(cursor, login, password):
@@ -86,6 +91,11 @@ try:
     def view_link(cursor,login):
        user = id_user(cursor,login)
        return cursor.execute('''SELECT id, short, long, access, count FROM links WHERE owner = ?''', (user,)).fetchall()
+
+
+    def del_links(connection, cursor, id):
+        cursor.execute('''DELETE FROM links WHERE id = ?''', (id,))
+        connection.commit()
 
 
     cursor.close()
