@@ -1,4 +1,7 @@
+import random
+
 from flask import Flask, render_template, url_for, request, redirect, session, make_response, flash
+import hashlib
 from db import *
 import os
 from flask_bcrypt import Bcrypt
@@ -94,9 +97,14 @@ def addLink():
         cursor = con.cursor()
         login = session['name']
         lvl = request.form['lvl']
-        short = request.form['short']
         long = request.form['long']
+        if request.form['short'] is not None and request.form['short'] != "":
+            short = "https://" + request.form['short']
+
+        else:
+            short = "https://" + hashlib.md5(long.encode()).hexdigest()[:random.randint(8, 12)]
         if session['auth'] == True:
+
             add_link(con, cursor, login, long, short, lvl)
             return redirect('http://127.0.0.1:5000/links')
         else:
