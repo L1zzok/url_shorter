@@ -1,0 +1,39 @@
+.modallll-wrapper{
+    z-index: 9999;
+    top: 0;
+    position: fixed;
+    min-width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(34, 34, 34, 0.52);
+    overflow-y: scroll;
+
+}
+
+.modallll{
+    padding: 20px;
+    width: 50%;
+    min-height: 80%;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    border-radius: 20px;
+    background-color: white;
+
+
+}
+
+
+.close{
+    background-color: white;
+    border: 0px;
+    margin-left: 650px ;
+}
+
+.modallll>form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
