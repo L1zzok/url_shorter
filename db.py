@@ -20,7 +20,7 @@ try:
         "id" INTEGER NOT NULL, 
         "long" TEXT NOT NULL, 
         "short" TEXT NOT NULL, 
-        "count" INTEGER NOT NULL, 
+        "count" INTEGER, 
         "owner" INTEGER NOT NULL, 
         "access" INTEGER NOT NULL,
         primary key("id" AUTOINCREMENT),
@@ -49,13 +49,16 @@ try:
 
     def id_user(cursor,login):
         user = cursor.execute('''SELECT id FROM users WHERE login =?''', (login,)).fetchone()
-        return user[0]
+        if user != None:
+            return user[0]
+        else:
+            return None
 
     def id_lvl(cursor,lvl):
          link = cursor.execute('''SELECT id FROM accesses WHERE level =?''', (lvl,)).fetchone()
          return link[0]
 
-    def add_link(con, cursor, login, long, short, lvl, count=1):
+    def add_link(con, cursor, login, long, short, lvl, count = 0):
         user = id_user(cursor,login)
         level = id_lvl(cursor,lvl)
         cursor.execute('''INSERT INTO links(owner, long, short, access, count) VALUES (?,?,?,?,?);''',(user, long, short, level, count))
@@ -96,6 +99,32 @@ try:
     def del_links(connection, cursor, id):
         cursor.execute('''DELETE FROM links WHERE id = ?''', (id,))
         connection.commit()
+
+    def countIncrement(link_name, hostname, cursor, con):
+        cursor.execute('UPDATE links SET count = count+1 WHERE short = ?', (hostname+link_name,))
+        con.commit()
+
+    def find_link (link_name, hostname, cursor, con):
+
+        return cursor.execute('SELECT long, access, owner FROM links WHERE short = ?', (hostname+link_name,)).fetchone()
+
+    def find_link_all (link_name, cursor):
+        return cursor.execute('SELECT long, access, owner FROM links WHERE short = ?', (link_name,)).fetchone()
+
+    def findLinkForId (id, cursor):
+        return cursor.execute('SELECT * FROM links WHERE id = ?',
+                              (id,)).fetchone()
+
+    def changeLinkName(id, cursor ,connect, name):
+        cursor.execute('UPDATE links SET short = ? WHERE id = ?', (name, id))
+        connect.commit()
+
+    def changeLinkStatus(cursor, con, lvl, id):
+        print(id)
+        print(lvl)
+        cursor.execute('UPDATE links SET access = ? WHERE id = ?', (lvl, id))
+        con.commit()
+
 
 
     cursor.close()

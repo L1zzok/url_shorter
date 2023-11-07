@@ -1,7 +1,17 @@
 {% extends 'profile.html' %}
 {% block title %}Мои ссылки{% endblock %}
 {% block content %}
-
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+  <div class="alert alert-danger">
+    <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+{% endwith %}
 
 <form method="post" class="mb-3 mt-5">
     <h4>Добавить ссылку</h4>
@@ -40,11 +50,11 @@
   {% for item in arr %}
     <tr>
       <th scope="row">{{item[0]}}</th>
-      <td><a href="{{item[2]}}">{{item[1]}}</a></td>
-      <td><a href="{{item[2]}}">{{item[2]}}</a></td>
+      <td><p>{{item[1]}}</p></td>
+      <td><p>{{item[2]}}</p></td>
       <td>{{item[3]}}</td>
       <td>{{item[4]}}</td>
-        <td><button name="edit" class="btn btn-light">✏️</button> <a href="/del?id={{item[0]}}" name="del" class="btn btn-light">❌</a></td>
+        <td><button name="edit" data-id="{{item[0]}}" class="btn btn-light edit">✏️</button> <a href="/del?id={{item[0]}}" name="del" class="btn btn-light">❌</a></td>
     </tr>
   {% endfor%}
     <tr>
