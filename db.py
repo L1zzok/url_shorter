@@ -127,6 +127,7 @@ try:
 
 
 
+
     cursor.close()
 except ValueError:
     print("Некорректно введены данные(используйте цифры)")

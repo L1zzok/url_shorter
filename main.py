@@ -149,6 +149,7 @@ def change_user():
 
     return redirect(request.host_url+'profile')
 
+
 @app.route('/<link>')
 def linkGo(link):
     con = sqlite3.connect(r"db.db")
