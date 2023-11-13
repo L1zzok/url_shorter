@@ -68,8 +68,8 @@ def registr():
             session['auth'] = True
             return redirect(request.host_url+'profile')
         else:
-            message = f"Этот логин ({login}) уже есть в базе"
-            return message
+            flash(f"Этот логин ({login}) уже есть в базе")
+            return redirect(f'/reg')
 
 # авторизация
 @app.route('/auth', methods= ['POST', "GET"])
@@ -139,11 +139,13 @@ def change_user():
         con = sqlite3.connect(r"db.db")
         cursor = con.cursor()
         new_login = request.form['login']
-        session['name'] = new_login
-        id = request.form['id']
-        print(new_login)
-        print(id)
-        change_login(con,cursor, id,new_login)
+        if find_user(cursor, new_login) == None:
+            session['name'] = new_login
+            id = request.form['id']
+            change_login(con,cursor, id,new_login)
+        else:
+            flash(f"Этот логин ({new_login}) уже есть в базе")
+            return redirect(f'/profile')
 
     return redirect(request.host_url+'profile')
 
@@ -171,6 +173,7 @@ def linkGo(link):
             countIncrement(link, request.host_url, cursor, con)
             return redirect(f'/auth/page/{link}')
         else:
+            countIncrement(link, request.host_url, cursor, con)
             return redirect(full_link[0])
 
     return redirect(f'{request.host_url}/')
