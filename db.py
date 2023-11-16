@@ -93,7 +93,7 @@ try:
 
     def view_link(cursor,login):
        user = id_user(cursor,login)
-       return cursor.execute('''SELECT id, short, long, access, count FROM links WHERE owner = ?''', (user,)).fetchall()
+       return cursor.execute('''SELECT links.id, links.short, links.long, accesses.level, links.count FROM links, accesses WHERE   owner = ? AND accesses.id = links.access ''', (user,)).fetchall()
 
 
     def del_links(connection, cursor, id):
@@ -104,16 +104,18 @@ try:
         cursor.execute('UPDATE links SET count = count+1 WHERE short = ?', (hostname+link_name,))
         con.commit()
 
-    def find_link (link_name, hostname, cursor, con):
+    def find_link (link_name, hostname, cursor):
 
         return cursor.execute('SELECT long, access, owner FROM links WHERE short = ?', (hostname+link_name,)).fetchone()
 
     def find_link_all (link_name, cursor):
         return cursor.execute('SELECT long, access, owner FROM links WHERE short = ?', (link_name,)).fetchone()
 
+    def find_link_long(link_name,login, cursor):
+        return cursor.execute('SELECT long, owner FROM links WHERE long = ? AND owner = ?', (link_name, login)).fetchone()
+
     def findLinkForId (id, cursor):
-        return cursor.execute('SELECT * FROM links WHERE id = ?',
-                              (id,)).fetchone()
+        return cursor.execute('SELECT * FROM links WHERE id = ?',(id,)).fetchone()
 
     def changeLinkName(id, cursor ,connect, name):
         cursor.execute('UPDATE links SET short = ? WHERE id = ?', (name, id))

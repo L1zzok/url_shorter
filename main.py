@@ -1,7 +1,7 @@
 # библиотеки, база данных
 import json
 import random, string
-from flask import Flask, render_template, url_for, request, redirect, session, make_response, flash
+from flask import Flask, render_template, url_for, request, redirect, session, make_response, flash, abort
 import hashlib
 from db import *
 import os
@@ -112,12 +112,17 @@ def addLink():
         else:
             short = request.host_url+ hashlib.md5(long.encode()).hexdigest()[:random.randint(8, 12)]
         if session['auth'] == True:
-            if find_link_all(short, cursor) == None:
-                add_link(con, cursor, login, long, short, lvl)
-                return redirect(request.host_url+'links')
+            if find_link_long(long, session["id"], cursor) == None:
+                print(find_link_long(long, session["name"], cursor))
+                if find_link_all(short, cursor) == None:
+                    add_link(con, cursor, login, long, short, lvl)
+                    return redirect(request.host_url+'links', code=302)
+                else:
+                    flash("Введите другой псевдоним", category="error")
+                    return redirect(request.host_url +'links' , code=302)
             else:
-                flash("Введите другой псевдоним", category="error")
-                return redirect(request.host_url +'links')
+                flash("Данная ссылка у вас уже есть", category="error")
+                return redirect(request.host_url + 'links', code=302)
 
         else:
             return f"Вы не авторизованы"
@@ -154,30 +159,31 @@ def change_user():
 def linkGo(link):
     con = sqlite3.connect(r"db.db")
     cursor = con.cursor()
-    full_link = find_link (link, request.host_url, cursor, con)
-    if (full_link[1] == 1):
-        countIncrement(link, request.host_url, cursor, con)
-        return  redirect( full_link[0])
-
-    if (full_link[1] == 2):
-        if(session.get('auth')):
+    full_link = find_link (link, request.host_url, cursor)
+    if full_link != None:
+        if (full_link[1] == 1):
             countIncrement(link, request.host_url, cursor, con)
-            return redirect(full_link[0])
-        else:
-            return redirect(f'/auth/page/{link}')
+            return  redirect( full_link[0])
 
-    if (full_link[1] ==3):
+        if (full_link[1] == 2):
+            if(session.get('auth')):
+                countIncrement(link, request.host_url, cursor, con)
+                return redirect(full_link[0])
+            else:
+                return redirect(f'/auth/page/{link}')
 
-        user_id = id_user(cursor, session.get('name'))
-        if(user_id != full_link[2]):
-            flash('Ссылка не ваша, а доступ приватный')
-            countIncrement(link, request.host_url, cursor, con)
-            return redirect(f'/auth/page/{link}')
-        else:
-            countIncrement(link, request.host_url, cursor, con)
-            return redirect(full_link[0])
+        if (full_link[1] ==3):
 
-    return redirect(f'{request.host_url}/')
+            user_id = id_user(cursor, session.get('name'))
+            if(user_id != full_link[2]):
+                flash('Ссылка не ваша, а доступ приватный')
+                return redirect(f'/auth/page/{link}')
+            else:
+                countIncrement(link, request.host_url, cursor, con)
+                return redirect(full_link[0])
+    else:
+        abort(404)
+
 
 @app.route('/auth/page/<link>', methods= ['POST', "GET"])
 def authForLinkPage(link):
