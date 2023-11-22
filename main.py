@@ -205,7 +205,7 @@ def authForLink(link):
                 id = id_user(cursor,login)
                 session['id'] = id
                 session['auth'] = True
-                full_link = find_link(link, request.host_url, cursor, con)
+                full_link = find_link(link, request.host_url, cursor)
                 return redirect(f'/{link}')
 
             else:
@@ -216,7 +216,7 @@ def authForLink(link):
             return redirect(f'/auth/page/{link}')
 @app.route('/gethostname', methods= ['POST', "GET"])
 def gethostname():
-    # full_link = find_link(link, request.host_url, cursor, con)
+    # full_link = find_link(link, request.host_url, cursor)
     return json.dumps(request.host_url)
 
 @app.route('/getLinkName', methods= ['POST', "GET"])
@@ -242,7 +242,7 @@ def changeLinkNickName():
         id = request.form.get("id")
         random1 = request.form.get('random')
         if id != None:
-            if (find_link (link_name, request.host_url, cursor, con) != None):
+            if (find_link (link_name, request.host_url, cursor) != None):
                 flash("Введите другой псевдоним", category="error")
                 return redirect("/links", code=302)
             print(changeLinkName(id, cursor,con, request.host_url+link_name))
@@ -251,7 +251,7 @@ def changeLinkNickName():
             letters = string.ascii_lowercase
 
             link_name_for_random = request.host_url+ ''.join(random.choice(letters) for i in range(random.randint(8, 12)))
-            if (find_link(link_name_for_random, request.host_url, cursor, con) != None):
+            if (find_link(link_name_for_random, request.host_url, cursor) != None):
                 link_name_for_random = request.host_url + ''.join(
                     random.choice(letters) for i in range(random.randint(8, 12)))
             changeLinkName(random1, cursor, con, link_name_for_random)
